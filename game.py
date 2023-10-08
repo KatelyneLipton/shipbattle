@@ -1,10 +1,19 @@
+from random import randint
+
 class Game:
-    def __init__(self):
-        self.board = [[' ' for _ in range(10)] for _ in range(10)]
+    def __init__(self, size=5):
+        self.size = size
+        self.board = [["O"] * self.size for _ in range(self.size)]
+        self.ship_row = None
+        self.ship_col = None
+        self.turns = 4
 
-    def place_ship(self, x, y, orientation, length):
-        if orientation == 'horizontal':
-            for i in range(length):
-                self.board[x][y + i] = 'S'
-            return True
+    def random_row(self):
+        return randint(1, self.size)
 
+    def random_col(self):
+        return randint(1, self.size)
+
+
+if __name__ == "__main__":
+    game = Game()
