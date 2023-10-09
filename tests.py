@@ -1,34 +1,149 @@
 import unittest
-from game import Game
-from unittest.mock import patch
-from io import StringIO
+from logic import *
+from game import check_winner
+
 
 class TestGame(unittest.TestCase):
 
-    def test_game_creation(self):
-        game = Game()
-        self.assertEqual(game.size, 5)
+    def test_generate_enemy_ships(self):
+        self.assertEqual(generate_enemy_ships(0, 0), 0)
 
-    def test_random_row(self):
-        game = Game()
-        row = game.random_row()
-        self.assertTrue(1 <= row <= game.size)
+    def test_generate_enemy_ships_size_5(self):
+        enemy_ships = [[0 for i in range(5)] for i in range(5)]
+        self.assertEqual(generate_enemy_ships(5, 0), enemy_ships)
 
-    def test_print_board(self):
-        game = Game()
-        expected_output = "   1 2 3 4 5\n1  O O O O O\n2  O O O O O\n3  O O O O O\n4  O O O O O\n5  O O O O O\n"
-        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
-            game.print_board()
-            self.assertEqual(mock_stdout.getvalue(), expected_output)
+    def test_generate_enem_ships(self):
+        enemy_ships = [[0 for i in range(5)] for i in range(5)]
+        self.assertEqual(generate_enemy_ships(5, 0), enemy_ships)
 
-    def test_play_win(self):
-        game = Game(size=2)
-        game.ship_row = game.ship_col = 1
-        expected_output = "Давайте сыграем в Морской бой!\n   1 2\n1  O O\n2  O O\n\nХод 1/4\nУгадайте номер строки: 1\nУгадайте номер столбца: 1\nПоздравляем! Вы потопили мой корабль!\n"
-        with patch("builtins.input", side_effect=["1", "1"]), patch("sys.stdout", new_callable=StringIO) as mock_stdout:
-            result = game.play()
-            self.assertEqual(mock_stdout.getvalue(), expected_output)
-            self.assertEqual(result, "Победа")
+    def test_check_winner_false(self):
+        list1 = [
+            [3, 5, 7],
+            [2, 4, 6],
+            [1, 8, 9]
+        ]
+        list2 = [
+            [3, 5, 7],
+            [2, 1, 6],
+            [1, 8, 9]
+        ]
+        self.assertFalse(check_winner(1, 2, list1, list2), False)
+
+    def test_check_winner_true(self):
+        list1 = [
+            [3, 5, 7],
+            [2, 4, 6],
+            [1, 8, 9]
+        ]
+        list2 = [
+            [3, 5, 7],
+            [2, 4, 6],
+            [1, 8, 9]
+        ]
+        self.assertTrue(check_winner(1, 1, list1, list2), True)
+
+    def test_count_ship(self):
+        self.assertEqual(count_ships(0), 0)
+
+    def test_empty_board(self):
+        board = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_count = 0
+        self.assertEqual(count_ships(board), expected_count)
+
+    def test_board_with_ships(self):
+        board = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_count = 1
+        self.assertEqual(count_ships(board), expected_count)
+
+    def test_board_with_multiple_ships(self):
+        board = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_count = 2
+        self.assertEqual(count_ships(board), expected_count)
+
+    def test_score_all_hits(self):
+        board = [
+            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 4, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 4, 0, 3, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 3, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 3, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_score = 7
+        self.assertEqual(score(board), expected_score)
+
+    def test_score_partial_hits(self):
+        board = [
+            [0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_score = 4
+        self.assertEqual(score(board), expected_score)
+
+    def test_score_no_hits(self):
+        board = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        expected_score = 0
+        self.assertEqual(score(board), expected_score)
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
